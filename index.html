@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>
+				Shortner Index
+			</title>
+			<style>
+				.div input,button{
+					font-size:30px;
+					margin-top:10px;
+					width:25%;
+				}
+				.div{
+					display:flex;
+					flex-direction:column;
+					justify-content:center;
+					align-items:center;
+				}
+			</style>
+		</head>
+		<body>
+			<div class="div">
+				<input type="text" name="url" id="url" placeholder="Enter Valid URL">
+				<input type="text" name="short" id="short" placeholder="Enter Short Name">
+				<button id="Submit" onclick="sendData()">
+					Submit
+				</button>
+			</div>
+			<div class="div" style="margin-top:50px;" id="res">
+				ulr:example.com
+			</div>
+			<script>
+				function sendData() {
+					const value = document.getElementById('url').value;
+					const name = document.getElementById('short').value;
+
+					fetch('/main', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded'
+						},
+						body: `myInput=${encodeURIComponent(value)}&myName=${encodeURIComponent(name)}`
+					})
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.text(); // or response.json() if your server returns JSON
+					})
+					.then(data => {
+						data = JSON.parse(data);
+						let a = "";
+						data.forEach((item) => {
+						  let name = item.ShortName;
+						  let url = item.url;
+						  a += `<a href="${url}">${name}</a><br>`;
+						});
+						document.getElementById("res").innerHTML = a;
+						
+						console.log(data);
+						// location.reload(); // uncomment if you want to reload
+					})
+					.catch(error => {
+						console.error('There was a problem with the fetch operation:', error);
+					});
+				}
+			</script>
+
+		</body>
+	</html>
